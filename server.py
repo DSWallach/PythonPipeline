@@ -1,11 +1,21 @@
 import os
 import socket
 import time
+import signal
+import errno
 
 SERVER_ADDRESS = (HOST, PORT) = '', 8888
 REQUEST_QUEUE_SIZE = 5
 
 # Taken from tutorial located at https://ruslanspivak.com/lsbaws-part3/
+
+
+def grim_reaper(signum, frame):
+    pid, status = os.wait()
+    print(
+        'Child {pid} terminated with status {status}'
+        '\n'.format(pid=pid, status=status)
+    )
 
 
 def handle_request(client_connection):
@@ -34,14 +44,23 @@ def serve_forever():
     print('Serving HTTP on port {port} ...'.format(port=PORT))
     print('Parent PID (PPID): {pid}\n'.format(pid=os.getpid()))
 
+    signal.signal(signal.SIGCHLD, grim_reaper)
+
     while True:
-        client_connection, client_address = listen_socket.accept()
+        try:
+            client_connection, client_address = listen_socket.accept()
+        except IOError as e:
+            code, msg = e.args
+            if code == errno.EINTR:
+                continue
+            else:
+                raise
         pid = os.fork()
         if pid == 0:
             listen_socket.close()
             handle_request(client_connection)
             client_connection.close()
-            os.exit()
+            os._exit(0)
         else:
             client_connection.close()
 

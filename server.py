@@ -11,11 +11,16 @@ REQUEST_QUEUE_SIZE = 5
 
 
 def grim_reaper(signum, frame):
-    pid, status = os.wait()
-    print(
-        'Child {pid} terminated with status {status}'
-        '\n'.format(pid=pid, status=status)
-    )
+    while True:
+        try:
+            pid, status = os.waitpid(
+                -1,
+                os.WNOHANG
+            )
+        except OSError:
+            return
+        if pid == 0:
+            return
 
 
 def handle_request(client_connection):

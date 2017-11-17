@@ -30,14 +30,14 @@ if __name__ == '__main__':
         description='Test client for LSBAWS.',
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
-    parser.add_arugment(
-        '--max-conns',
+    parser.add_argument(
+        '--max_conns',
         type=int,
         default=1024,
         help='Maximum number of connections per client.'
     )
     parser.add_argument(
-        '--max-clients',
+        '--max_clients',
         type=int,
         default=1,
         help='Maximum number of clients.'

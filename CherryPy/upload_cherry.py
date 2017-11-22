@@ -9,20 +9,11 @@ absDir = os.path.join(os.getcwd(), localDir)
 
 
 class FileDemo(object):
+    filename = None
 
     @cherrypy.expose
     def index(self):
-        return """
-        <html><body>
-        <h2>Upload a file</h2>
-        <form action='upload' method='post' enctype='multipart/form-data'>
-        filename: <input type='file' name='myFile' /> <br />
-        <input type='submit' />
-        </form>
-        <h2>Download file</h2>
-        <a href='download'>This one</a>
-        </body></html>
-        """
+        return open('./index.html')
 
     @cherrypy.expose
     def upload(self, myFile):
@@ -41,11 +32,13 @@ class FileDemo(object):
                 break
             size += len(data)
 
+        self.filename = myFile.filename
+
         return out % (size, myFile.filename, myFile.content_type)
 
     @cherrypy.expose
     def download(self):
-        path = os.path.join(absDir, 'pdf_file.pdf')
+        path = os.path.join(absDir, self.filename)
         return static.serve_file(path, 'application/x-download',
                                  'attachment', os.path.basename(path))
 

@@ -3,6 +3,7 @@ import os.path
 
 import cherrypy
 from cherrypy.lib import static
+import pymongo
 
 localDir = os.path.dirname(__file__)
 absDir = os.path.join(os.getcwd(), localDir)
@@ -17,20 +18,23 @@ class FileDemo(object):
 
     @cherrypy.expose
     def upload(self, myFile):
-        out = """<html>
-        <body>
-            myFile length: %s <br />
-            myFile filename: %s <br />
-            myFile mime-type: %s
-        </body>
-        <html>"""
+        with open('./file_info.html') as f:
+            out = f.read()
 
         size = 0
+        filename = 'data.file'
+        nf = open(filename, 'wb')
         while True:
             data = myFile.file.read(8192)
+            nf.write(data)
             if not data:
                 break
             size += len(data)
+
+        cherrypy.log(str(myFile))
+        cherrypy.log(str(myFile.file))
+        cherrypy.log(data.decode('UTF-8'))
+        nf.close()
 
         self.filename = myFile.filename
 

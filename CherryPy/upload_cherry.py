@@ -20,9 +20,8 @@ class FileDemo(object):
     def upload(self, myFile):
         with open('./file_info.html') as f:
             out = f.read()
-
         size = 0
-        filename = 'data.file'
+        filename = 'uploaded_file'
         nf = open(filename, 'wb')
         while True:
             data = myFile.file.read(8192)
@@ -30,14 +29,8 @@ class FileDemo(object):
             if not data:
                 break
             size += len(data)
-
-        cherrypy.log(str(myFile))
-        cherrypy.log(str(myFile.file))
-        cherrypy.log(data.decode('UTF-8'))
         nf.close()
-
         self.filename = myFile.filename
-
         return out % (size, myFile.filename, myFile.content_type)
 
     @cherrypy.expose

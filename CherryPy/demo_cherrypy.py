@@ -2,8 +2,8 @@ import random
 import string
 import os, os.path
 import time
-import sqlite3
 import cherrypy
+import pymongog
 
 
 DB_STRING = 'my.db'
